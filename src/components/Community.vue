@@ -29,6 +29,7 @@
 <script>
 export default {
   name: 'Community',
+  emits: ['title'],
   data () {
     return {
       items: [],
@@ -37,7 +38,7 @@ export default {
   },
   computed: {
     loggedIn () {
-      return !!window.localStorage.getItem('token')
+      return this.$lotide.isLoggedIn()
     }
   },
   methods: {
@@ -48,12 +49,8 @@ export default {
       var id = Number.parseInt(params.id)
       if(Number.isInteger(id)) {
         this.id = id
-        
-        fetch(this.apiPath + '/communities/' + id + '/posts')
-          .then((response) => {
-            return response.json()
-          })
-          .then((json) => {
+        this.$lotide.getCommunityPosts(id).then((json) => {
+          if(json) {
             var posts = [];
             for(var item of json) {
               posts.push({
@@ -62,11 +59,13 @@ export default {
               })
             }
             this.items = posts
-          })
+          }
+        })
       }
     }
   },
   created () {
+    // to be solved: this will continue to probe changes even if the view is unmounted
     this.$watch(
       () => this.$route.params,
       (params) => {

@@ -21,6 +21,7 @@ import App from './App.vue'
 import WaveUI from 'wave-ui'
 import 'wave-ui/dist/wave-ui.css'
 import '@mdi/font/css/materialdesignicons.css'
+import LotideApi from './plugins/lotide-api.js'
 
 const VueRouter = require('vue-router')
 const config = require('./config.js')
@@ -52,6 +53,7 @@ const app = createApp({
 })
 
 app.use(router)
+app.use(LotideApi, { apiPath: config.api })
 app.config.globalProperties.apiPath = config.api;
 
 new WaveUI(app, {

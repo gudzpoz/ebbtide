@@ -32,6 +32,7 @@
 <script>
 export default {
   name: 'Prompt',
+  emits: ['cancel', 'confirm'],
   data () {
     return {
     }

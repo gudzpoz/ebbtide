@@ -24,6 +24,7 @@
 <script>
 export default {
   name: 'NewComment',
+  emits: ['posted'],
   data () {
     return {
       comment: ''
@@ -35,27 +36,12 @@ export default {
       if(!Number.isInteger(id)) {
         return
       }
-      fetch(this.apiPath + '/posts/' + id + '/replies', {
-        method: 'POST',
-        body: JSON.stringify({
-          content_text: this.comment
-        }),
-        headers: {
-            Authorization: 'Bearer ' + window.localStorage.getItem('token')
-          }
-        })
-          .then((response) => {
-            if(response.status === 200) {
-              return response.json()
-            } else {
-              alert('Server returned ' + response.status)
-            }
-          })
-          .then((json) => {
-            if(json) {
-              this.$emit('posted')
-            }
-          })
+      this.$lotide.replyToPost(this.comment, id).then((json) => {
+        if(json) {
+          this.$emit('posted')
+          this.comment = ''
+        }
+      })
     }
   }
 }

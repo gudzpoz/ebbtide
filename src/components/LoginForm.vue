@@ -36,6 +36,7 @@
 <script>
 export default {
   name: 'LoginForm',
+  emits: ['logged', 'close'],
   data () {
     return {
       validators: {
@@ -50,31 +51,14 @@ export default {
   methods: {
     submit () {
       this.logging = true
-      fetch(this.apiPath + '/logins', {
-        method: 'POST',
-        body: JSON.stringify({
-          username: this.user,
-          password: this.pass
-        })
+      this.$lotide.login(this.user, this.pass).then((response) => {
+        this.logging = false
+        if(response) {
+          this.$emit('logged')
+        } else {
+          this.error = 'Please try again'
+        }
       })
-        .then((response) => {
-          this.logging = false
-          if(response.status === 200) {
-            return response.json()
-          } else {
-            return null
-          }
-        })
-        .then((json) => {
-          if(json) {
-            window.localStorage.setItem('token', json.token)
-            window.localStorage.setItem('username', json.username)
-            window.localStorage.setItem('id', json.id)
-            this.$emit('logged')
-          } else {
-            this.error = 'Please try again'
-          }
-        })
     }
   }
 }

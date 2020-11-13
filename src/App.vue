@@ -29,7 +29,7 @@
     <w-list :items="items" nav class="fill-width"></w-list>
   </w-drawer>
   <div class="mx4"><router-view @title="changeTitle"></router-view></div>
-  <LoginForm v-if="loginForm" class="absolute" @close="loginForm = false" @logged="loggedin = true"></LoginForm>
+  <LoginForm v-if="loginForm" class="absolute" @close="loginForm = false" @logged="loggedIn = true; loginForm = false"></LoginForm>
   <Prompt v-if="logoutPrompt" :title="prompt" @confirm="logout" @cancel="logoutPrompt = false"></Prompt>
 </w-app>
 </template>
@@ -55,9 +55,8 @@ export default {
     }
   },
   created () {
-    if(window.localStorage.getItem('token')) {
-      this.loggedIn = true
-    }
+    this.$lotide.updateLoginStatus()
+    this.loggedIn = this.$lotide.isLoggedIn()
   },
   methods: {
     changeTitle (title) {
@@ -66,20 +65,14 @@ export default {
     },
     logout () {
       this.prompt = 'Logging Out...'
-      fetch(this.apiPath + '/logins/~current', {
-        method: 'DELETE'
+      this.$lotide.logout().then((response) => {
+        if(response) {
+          this.loggedIn = false
+          this.logoutPrompt = false
+        } else {
+          this.prompt = 'Logout Failed'
+        }
       })
-        .then((response) => {
-          if(response.status === 204) {
-            this.loggedIn = false
-            this.logoutPrompt = false
-            window.localStorage.removeItem('token')
-            window.localStorage.removeItem('username')
-            window.localStorage.removeItem('id')
-          } else {
-            this.prompt = 'Server returned ' + response.status
-          }
-        })
     }
   },
   components: {

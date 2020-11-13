@@ -29,6 +29,7 @@
 <script>
 export default {
   name: 'Communities',
+  emits: ['title'],
   data () {
     return { items: [] }
   },
@@ -38,11 +39,8 @@ export default {
     }
   },
   created () {
-    fetch(this.apiPath + '/communities').
-      then((response) => {
-        return response.json()
-      }).
-      then((json) => {
+    this.$lotide.getCommunities().then((json) => {
+      if(json) {
         var communities = [];
         for(var item of json) {
           communities.push({
@@ -52,7 +50,8 @@ export default {
           })
         }
         this.items = communities
-      })
+      }
+    })
   },
   mounted () {
     this.$emit('title', 'Communities')

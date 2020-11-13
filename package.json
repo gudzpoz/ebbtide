@@ -40,6 +40,9 @@
     },
     "rules": {}
   },
+  "vue": {
+    "publicPath": "/"
+  },
   "browserslist": [
     "> 1%",
     "last 2 versions",

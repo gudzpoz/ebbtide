@@ -39,6 +39,7 @@ import NewComment from './NewComment.vue'
 
 export default {
   name: 'Post',
+  emits: ['title'],
   data () {
     return {
       title: '',
@@ -57,9 +58,8 @@ export default {
     reload (params) {
       var id = Number.parseInt(params.id);
       if(Number.isInteger(id)) {
-        fetch(this.apiPath + '/posts/' + id)
-          .then((response) => { return response.json() })
-          .then((json) => {
+        this.$lotide.getPost(id).then((json) => {
+          if(json) {
             this.title = json.title
             this.content = json.content_html
             this.author = json.author.username
@@ -68,7 +68,8 @@ export default {
             this.replies = json.replies
             this.thread = json
             this.$emit('title', 'Post')
-          })
+          }
+        })
       }
     },
     getAuthorLink (id) {

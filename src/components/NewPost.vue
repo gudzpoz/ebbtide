@@ -48,29 +48,13 @@ export default {
       var id = Number.parseInt(this.$route.params.id)
       var title = prompt('Please enter a title for the post:')
       if(title && Number.isInteger(id)) {
-        fetch(this.apiPath + '/posts', {
-          method: 'POST',
-          body: JSON.stringify({
-            community: id,
-            title: title,
-            content_markdown: globalEditor.getMarkdown()
-          }),
-          headers: {
-            Authorization: 'Bearer ' + window.localStorage.getItem('token')
+        this.$lotide.postPost(title, globalEditor.getMarkdown(), id, true).then((json) => {
+          if(json) {
+            this.$router.push('/main/post/' + json.id)
+          } else {
+            alert('Post failed.')
           }
         })
-          .then((response) => {
-            if(response.status === 200) {
-              return response.json()
-            } else {
-              alert('Server returned ' + response.status)
-            }
-          })
-          .then((json) => {
-            if(json) {
-              this.$router.push('/main/post/' + json.id)
-            }
-          })
       }
     })
   },
