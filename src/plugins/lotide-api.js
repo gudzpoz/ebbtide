@@ -45,6 +45,10 @@ export default {
         me: '/users/~me',
         get: '/users/{id}',
       },
+      comment: {
+        reply: '/comments/{id}/replies',
+      },
+      register: '/users',
     }
     const apiPath = options.apiPath;
     var authorizeHeaders = (headers) => {
@@ -197,6 +201,55 @@ export default {
         })
       }
     }
+    var replyToComment = (text, commentId, markdown) => {
+      if(markdown) {
+        return post(getPath(apis.comment.reply, { id: commentId }), {
+          content_markdown: text
+        }, 200).then((response) => {
+          if(response) {
+            return response.json()
+          } else {
+            return null
+          }
+        })
+      } else {
+        return post(getPath(apis.comment.reply, { id: commentId }), {
+          content_text: text
+        }, 200).then((response) => {
+          if(response) {
+            return response.json()
+          } else {
+            return null
+          }
+        })
+      }
+    }
+    var register = (username, password, email) => {
+      if(email) {
+        return post(getPath(apis.register), {
+          username: username,
+          password: password,
+          email_address: email
+        }, 200).then((response) => {
+          if(response) {
+            return response.json()
+          } else {
+            return null
+          }
+        })
+      } else {
+        return post(getPath(apis.register), {
+          username: username,
+          password: password
+        }, 200).then((response) => {
+          if(response) {
+            return response.json()
+          } else {
+            return null
+          }
+        })
+      }
+    }
     
     app.config.globalProperties.$lotide = {
       getJson: getJson,
@@ -210,6 +263,8 @@ export default {
       getPost: getPost,
       replyToPost: replyToPost,
       postPost: postPost,
+      replyToComment: replyToComment,
+      register: register,
     }
   }
 }

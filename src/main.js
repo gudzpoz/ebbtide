@@ -17,6 +17,7 @@
 */
 
 import { createApp, h } from 'vue'
+import { createI18n } from 'vue-i18n'
 import App from './App.vue'
 import WaveUI from 'wave-ui'
 import 'wave-ui/dist/wave-ui.css'
@@ -52,8 +53,15 @@ const app = createApp({
     render: () => h(App)
 })
 
+const i18n = createI18n({
+  locale: window.navigator.language,
+  fallbackLocale: 'en',
+  messages: {}
+})
+
 app.use(router)
 app.use(LotideApi, { apiPath: config.api })
+app.use(i18n)
 app.config.globalProperties.apiPath = config.api;
 
 new WaveUI(app, {

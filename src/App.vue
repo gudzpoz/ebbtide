@@ -22,19 +22,25 @@
     <w-button icon="mdi mdi-menu" text xl class="mr3" @click="drawerShow = true"></w-button>
     <div class="title2 mt1">{{ title }}</div>
     <div class="spacer"></div>
-    <w-button v-if="!loggedIn" xl icon="mdi mdi-login" class="ml2" @click="loginForm = true" bg-color="info">Login</w-button>
-    <w-button v-if="loggedIn" text xl icon="mdi mdi-logout" class="ml2" @click="prompt = 'Are you sure to log out?'; logoutPrompt = true" bg-color="warning">Log Out</w-button>
+    <w-button v-if="!loggedIn" xl @click="registerForm = true" bg-color="success" class="mr2"><w-icon xl color="white" class="mr3">mdi mdi-account-plus</w-icon>Sign Up</w-button>
+    <w-button v-if="!loggedIn" xl @click="loginForm = true" bg-color="info"><w-icon xl color="white" class="mr3">mdi mdi-login</w-icon>Login</w-button>
+    <w-button v-if="loggedIn" xl @click="prompt = 'Are you sure to log out?'; logoutPrompt = true" bg-color="warning"><w-icon xl color="white" class="mr3">mdi mdi-logout</w-icon>Log Out</w-button>
   </w-toolbar>
   <w-drawer :model-value="drawerShow"  left @close="drawerShow = false">
-    <w-list :items="items" nav class="fill-width"></w-list>
+    <w-flex class="column mx3 mt3">
+      <w-icon xl size="4em" bg-color="info" color="white" class="mb4">mdi mdi-hydro-power</w-icon>
+      <w-list :items="items" nav class="fill-width"></w-list>
+    </w-flex>
   </w-drawer>
   <div class="mx4"><router-view @title="changeTitle"></router-view></div>
   <LoginForm v-if="loginForm" class="absolute" @close="loginForm = false" @logged="loggedIn = true; loginForm = false"></LoginForm>
+  <NewUser v-if="registerForm" class="absolute" @close="registerForm = false" @registered="registerForm = false"></NewUser>
   <Prompt v-if="logoutPrompt" :title="prompt" @confirm="logout" @cancel="logoutPrompt = false"></Prompt>
 </w-app>
 </template>
 
 <script>
+import NewUser from './components/NewUser.vue'
 import LoginForm from './components/LoginForm.vue'
 import Prompt from './components/Prompt.vue'
 
@@ -42,6 +48,7 @@ export default {
   name: 'App',
   data: () => {
     return {
+      registerForm: false,
       drawerShow: false,
       title: 'ebbtide',
       loginForm: false,
@@ -77,7 +84,8 @@ export default {
   },
   components: {
     LoginForm: LoginForm,
-    Prompt: Prompt
+    Prompt: Prompt,
+    NewUser: NewUser,
   },
   watch: {
     $route () {

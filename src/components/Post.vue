@@ -22,19 +22,14 @@
 <div v-if="content" v-html="content"></div>
 <div v-else-if="thread && thread.content_text">{{ thread.content_text }}</div>
 <NewComment @posted="reload($route.params)"></NewComment>
-<w-list :items="replies" class="ml6" column>
-  <template #item="{ item }">
-    <div column class="mt2">
-      <span class="caption">by <router-link :to="getAuthorLink(item.author.id)">{{ item.author.username }}</router-link> on {{ time(item.created) }}</span>
-      <div v-if="item.content_html" class="reply" v-html="item.content_html"></div>
-      <div v-else-if="item.content_text" class="reply">{{ item.content_text }}</div>
-    </div>
-  </template>
-</w-list>
+<div class="ml6 column">
+  <Comment @reply="reply" column class="mt2" v-for="item in replies" :key="item.created" :item="item"></Comment>
+</div>
 </template>
 
 <script>
 import moment from 'moment'
+import Comment from './Comment.vue'
 import NewComment from './NewComment.vue'
 
 export default {
@@ -52,11 +47,20 @@ export default {
     }
   },
   methods: {
+    reply (item) {
+      this.$lotide.replyToComment(item.reply, item.item.id, false).then((json) => {
+        if(json) {
+          this.reload(this.$route.params)
+        } else {
+          alert('Reply failed.')
+        }
+      })
+    },
     time (utc) {
       return moment.utc(utc).fromNow()
     },
     reload (params) {
-      var id = Number.parseInt(params.id);
+      var id = Number.parseInt(params.id)
       if(Number.isInteger(id)) {
         this.$lotide.getPost(id).then((json) => {
           if(json) {
@@ -85,7 +89,8 @@ export default {
     this.reload(this.$route.params)
   },
   components: {
-    NewComment: NewComment
+    NewComment: NewComment,
+    Comment: Comment
   }
 }
 </script>

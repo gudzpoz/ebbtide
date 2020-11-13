@@ -1,5 +1,9 @@
 # ebbtide
 
+## Todo
+
+- I18N
+
 ## Project setup
 ```
 yarn install

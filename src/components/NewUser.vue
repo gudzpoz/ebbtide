@@ -17,14 +17,17 @@
 -->
 
 <template>
+
 <w-overlay @close="this.$emit('close')" :model-value="true">
   <w-card title="Login" title-class="blue-light5--bg" bg-color="white">
-    <w-form @submit="submit" @input="error = ''">
+    <w-form @submit="submit">
       <w-input label="User name" type="text" :validators="[validators.required]" v-model:model-value="user"></w-input>
-      <w-input label="Password" type="password" :validators="[validators.required]" v-model:model-value="pass"></w-input>
+      <w-input label="Password" type="password" v-model:model-value="pass"></w-input>
+      <w-input label="Password Again" type="password" v-model:model-value="passAgain"></w-input>
+      <w-input label="E-Mail (optional)" type="text" v-model:model-value="mail"></w-input>
       <w-flex class="mt3 fill-width">
         <div class="error">{{ error }}</div>
-        <w-spinner v-if="logging"></w-spinner>
+        <w-spinner v-if="registering"></w-spinner>
         <div class="spacer"></div>
         <w-button type="submit">Submit</w-button>
       </w-flex>
@@ -35,30 +38,55 @@
 
 <script>
 export default {
-  name: 'LoginForm',
-  emits: ['logged', 'close'],
+  name: 'NewUser',
+  emits: ['registered', 'close'],
   data () {
     return {
       validators: {
         required: value => !!value || 'This field is required'
       },
-      logging: false,
+      mail: '',
+      registering: false,
       error: '',
       user: '',
-      pass: ''
+      pass: '',
+      passAgain: ''
     }
   },
   methods: {
-    submit () {
-      this.logging = true
-      this.$lotide.login(this.user, this.pass).then((response) => {
-        this.logging = false
-        if(response) {
-          this.$emit('logged')
+    validate () {
+      if(this.user) {
+        if(this.pass && this.pass === this.passAgain) {
+          if(this.mail) {
+            const mail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            if(mail.test(this.mail.toLowerCase())) {
+              return true
+            } else {
+              this.error = 'Invalid Email!'
+            }
+          } else {
+            return true
+          }
         } else {
-          this.error = 'Please try again'
+          this.error = 'Password not matching!'
         }
-      })
+      }
+      return false
+    },
+    submit () {
+      this.registering = true
+      if(this.validate()) {
+        this.$lotide.register(this.user, this.pass, this.mail).then((response) => {
+          this.registering = false
+          if(response) {
+            this.$emit('registered')
+          } else {
+            this.error = 'Please try again'
+          }
+        })
+      } else {
+        this.registering = false
+      }
     }
   }
 }
