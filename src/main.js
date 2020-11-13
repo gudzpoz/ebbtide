@@ -31,6 +31,7 @@ import Communities from './components/Communities.vue'
 import Community from './components/Community.vue'
 import NewPost from './components/NewPost.vue'
 import Post from './components/Post.vue'
+import About from './components/About.vue'
 import NotFound from './components/NotFound.vue'
 
 const routes = [
@@ -40,8 +41,9 @@ const routes = [
   { path: '/main/community/:id', component: Community },
   { path: '/main/community/:id/new', component: NewPost },
   { path: '/main/post/:id', component: Post },
-  { path: '/404', component: NotFound },
-  { path: '/:pathMatch(.*)*', redirect: '/404' }
+  { path: '/main/about', component: About },
+  { path: '/main/404', component: NotFound },
+  { path: '/:pathMatch(.*)*', redirect: '/main/404' }
 ];
 
 const router = VueRouter.createRouter({

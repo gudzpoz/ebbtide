@@ -57,7 +57,7 @@ export default {
       prompt: '',
       items: [
         { label: 'Communities', route: '/main' },
-        { label: 'Me', route: '/main/user' }
+        { label: 'About', route: '/main/about' }
       ]
     }
   },
