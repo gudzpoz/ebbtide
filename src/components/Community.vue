@@ -21,12 +21,17 @@
 <w-button v-if="id !== null && loggedIn" @click="routeNewPost">New Post</w-button>
 <w-list :items="items" nav :hover="false">
   <template #item="{ item }">
-    <span class="title3 post-link">{{ item.label }}</span>
+    <span class="title3 post-link">{{ item.title }}</span>
+    <span class="caption ml3">{{ time(item.created) }}</span>
+    <span class="caption ml3">by {{ item.author.username }}</span>
+    <span class="caption ml3">in {{ item.community.name }}</span>
   </template>
 </w-list>
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   name: 'Community',
   emits: ['title'],
@@ -42,25 +47,26 @@ export default {
     }
   },
   methods: {
+    time (utc) {
+      return moment.utc(utc).fromNow()
+    },
     routeNewPost () {
       this.$router.push('' + this.id + '/new')
     },
     reload (params) {
       var id = Number.parseInt(params.id)
+      var load = (json) => {
+        if(json) {
+          json.forEach((item) => { item.route = '/main/post/' + item.id })
+          this.items = json
+        }
+      }
       if(Number.isInteger(id)) {
         this.id = id
-        this.$lotide.getCommunityPosts(id).then((json) => {
-          if(json) {
-            var posts = [];
-            for(var item of json) {
-              posts.push({
-                label: item.title,
-                route: '/main/post/' + item.id
-              })
-            }
-            this.items = posts
-          }
-        })
+        this.$lotide.getCommunityPosts(id).then(load)
+      } else if(!params.id) {
+        this.$lotide.getPosts().then(load)
+        this.$emit('title', 'The Whole Known Timeline')
       }
     }
   },

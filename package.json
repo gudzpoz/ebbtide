@@ -42,7 +42,7 @@
     "rules": {}
   },
   "vue": {
-    "publicPath": "/"
+    "publicPath": "/main"
   },
   "browserslist": [
     "> 1%",

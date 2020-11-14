@@ -160,6 +160,9 @@ export default {
     var getCommunityPosts = (id) => {
       return getJson(getPath(apis.community.posts, { id: id }), 200)
     }
+    var getPosts = () => {
+      return getJson(getPath(apis.posts), 200)
+    }
     var getPost = (id) => {
       return getJson(getPath(apis.post.get, { id: id }), 200)
     }
@@ -257,6 +260,7 @@ export default {
       login: login,
       logout: logout,
       isLoggedIn: () => { return !!logins.token },
+      getPosts: getPosts,
       getCommunities: getCommunities,
       getCommunityPosts: getCommunityPosts,
       updateLoginStatus: pullLocalStorage,

@@ -56,7 +56,8 @@ export default {
       loggedIn: false,
       prompt: '',
       items: [
-        { label: 'Communities', route: '/main' },
+        { label: 'The Whole Known Timeline', route: '/main/all' },
+        { label: 'Communities', route: '/main/communities' },
         { label: 'About', route: '/main/about' }
       ]
     }

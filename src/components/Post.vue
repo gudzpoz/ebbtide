@@ -19,8 +19,8 @@
 <template>
 <h3 class="title2 mb5">{{ title }}</h3>
 <span class="caption">by <router-link :to="getAuthorLink(authorId)">{{ author }}</router-link> on {{ time(timeUTC) }}</span>
-<div v-if="content" v-html="content"></div>
-<div v-else-if="thread && thread.content_text">{{ thread.content_text }}</div>
+<div v-if="content" v-html="content" class="content"></div>
+<div v-else-if="thread && thread.content_text" class="content">{{ thread.content_text }}</div>
 <NewComment @posted="reload($route.params)"></NewComment>
 <div class="ml6 column">
   <Comment @reply="reply" column class="mt2" v-for="item in replies" :key="item.created" :item="item"></Comment>
@@ -97,6 +97,15 @@ export default {
 
 <style scoped>
 .reply {
-  font-size: medium;
+    font-size: medium;
+}
+</style>
+
+<style> 
+.content ul, .content ol {
+    padding-left: 2em;
+}
+.content * {
+    margin: 0.5em;
 }
 </style>

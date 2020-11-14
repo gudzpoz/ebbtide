@@ -38,6 +38,7 @@ const routes = [
   { path: '/', redirect: '/main' },
   { path: '/main', redirect: '/main/communities' },
   { path: '/main/communities', component: Communities },
+  { path: '/main/all', component: Community },
   { path: '/main/community/:id', component: Community },
   { path: '/main/community/:id/new', component: NewPost },
   { path: '/main/post/:id', component: Post },
