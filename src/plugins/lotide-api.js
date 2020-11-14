@@ -157,6 +157,17 @@ export default {
     var getCommunities = () => {
       return getJson(getPath(apis.communities), 200)
     }
+    var createCommunity = (name) => {
+      return post(getPath(apis.communities), {
+        name: name
+      }, 200).then((response) => {
+        if(response) {
+          return response.json()
+        } else {
+          return null
+        }
+      })
+    }
     var getCommunityPosts = (id) => {
       return getJson(getPath(apis.community.posts, { id: id }), 200)
     }
@@ -269,6 +280,7 @@ export default {
       postPost: postPost,
       replyToComment: replyToComment,
       register: register,
+      createCommunity: createCommunity,
     }
   }
 }

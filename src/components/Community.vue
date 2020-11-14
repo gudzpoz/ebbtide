@@ -58,7 +58,20 @@ export default {
       var load = (json) => {
         if(json) {
           json.forEach((item) => { item.route = '/main/post/' + item.id })
-          this.items = json
+          if(json.length === 0) {
+            this.items = [{
+              title: 'Not any posts here. Post the first post!',
+              created: null,
+              author: {
+                username: 'nobody'
+              },
+              community: {
+                name: 'nowhere'
+              }
+            }]
+          } else {
+            this.items = json
+          }
         }
       }
       if(Number.isInteger(id)) {
