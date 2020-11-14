@@ -49,6 +49,7 @@ export default {
         reply: '/comments/{id}/replies',
       },
       register: '/users',
+      lookup: '/actors:lookup/{id}',
     }
     const apiPath = options.apiPath;
     var authorizeHeaders = (headers) => {
@@ -157,6 +158,9 @@ export default {
     var getCommunities = () => {
       return getJson(getPath(apis.communities), 200)
     }
+    var getCommunity = (id) => {
+      return getJson(getPath(apis.community.get, { id: id }), 200)
+    }
     var createCommunity = (name) => {
       return post(getPath(apis.communities), {
         name: name
@@ -170,6 +174,9 @@ export default {
     }
     var getCommunityPosts = (id) => {
       return getJson(getPath(apis.community.posts, { id: id }), 200)
+    }
+    var getUser = (id) => {
+      return getJson(getPath(apis.user.get, { id: id }), 200)
     }
     var getPosts = () => {
       return getJson(getPath(apis.posts), 200)
@@ -264,6 +271,28 @@ export default {
         })
       }
     }
+    var lookup = (id) => {
+      return getJson(getPath(apis.lookup, { id: id }), 200)
+    }
+    var getName = (type, id) => {
+      if(type === 'community') {
+        return getCommunity(id).then((json) => {
+          if(json) {
+            return json.name + '@' + json.host
+          } else {
+            return null
+          }
+        })
+      } else if(type === 'user') {
+        return getUser(id).then((json) => {
+          if(json) {
+            return json.username + '@' + json.host
+          } else {
+            return null
+          }
+        })
+      }
+    }
     
     app.config.globalProperties.$lotide = {
       getJson: getJson,
@@ -271,6 +300,7 @@ export default {
       login: login,
       logout: logout,
       isLoggedIn: () => { return !!logins.token },
+      getMe: () => { return logins },
       getPosts: getPosts,
       getCommunities: getCommunities,
       getCommunityPosts: getCommunityPosts,
@@ -281,6 +311,10 @@ export default {
       replyToComment: replyToComment,
       register: register,
       createCommunity: createCommunity,
+      getUser: getUser,
+      lookup: lookup,
+      getName: getName,
+      getCommunity: getCommunity,
     }
   }
 }

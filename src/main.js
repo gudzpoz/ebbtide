@@ -31,6 +31,8 @@ import Communities from './components/Communities.vue'
 import Community from './components/Community.vue'
 import NewPost from './components/NewPost.vue'
 import Post from './components/Post.vue'
+import User from './components/User.vue'
+import Search from './components/Search.vue'
 import About from './components/About.vue'
 import NotFound from './components/NotFound.vue'
 
@@ -41,7 +43,9 @@ const routes = [
   { path: '/main/all', component: Community },
   { path: '/main/community/:id', component: Community },
   { path: '/main/community/:id/new', component: NewPost },
+  { path: '/main/user/:id', component: User },
   { path: '/main/post/:id', component: Post },
+  { path: '/main/search', component: Search },
   { path: '/main/about', component: About },
   { path: '/main/404', component: NotFound },
   { path: '/:pathMatch(.*)*', redirect: '/main/404' }

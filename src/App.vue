@@ -58,6 +58,8 @@ export default {
       items: [
         { label: 'The Whole Known Timeline', route: '/main/all' },
         { label: 'Communities', route: '/main/communities' },
+        { label: 'Search', route: '/main/search' },
+        { label: 'Me', route: '/main/user/me' },
         { label: 'About', route: '/main/about' }
       ]
     }

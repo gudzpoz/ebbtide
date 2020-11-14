@@ -23,8 +23,8 @@
   <template #item="{ item }">
     <span class="title3 post-link">{{ item.title }}</span>
     <span class="caption ml3">{{ time(item.created) }}</span>
-    <span class="caption ml3">by {{ item.author.username }}</span>
-    <span class="caption ml3">in {{ item.community.name }}</span>
+    <span class="caption ml3">by <a :href="item.author.id && getAuthorLink(item.author.id)">{{ item.author.username }}</a></span>
+    <span class="caption ml3">in <a :href="item.community.id && getCommunityLink(item.community.id)">{{ item.community.name }}</a></span>
   </template>
 </w-list>
 </template>
@@ -47,6 +47,12 @@ export default {
     }
   },
   methods: {
+    getAuthorLink (id) {
+      return '/main/user/' + id
+    },
+    getCommunityLink (id) {
+      return '/main/community/' + id
+    },
     time (utc) {
       return moment.utc(utc).fromNow()
     },
