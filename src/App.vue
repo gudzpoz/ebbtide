@@ -32,7 +32,7 @@
       <w-list :items="items" nav class="fill-width"></w-list>
     </w-flex>
   </w-drawer>
-  <div class="mx4"><router-view @title="changeTitle"></router-view></div>
+  <div class="mx4 mb6 pb6"><router-view @title="changeTitle"></router-view></div>
   <LoginForm v-if="loginForm" class="absolute" @close="loginForm = false" @logged="loggedIn = true; loginForm = false"></LoginForm>
   <NewUser v-if="registerForm" class="absolute" @close="registerForm = false" @registered="registerForm = false"></NewUser>
   <Prompt v-if="logoutPrompt" :title="prompt" @confirm="logout" @cancel="logoutPrompt = false"></Prompt>
