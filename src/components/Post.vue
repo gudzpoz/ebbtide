@@ -19,6 +19,7 @@
 <template>
 <h3 class="title2 mb5">{{ title }}</h3>
 <span class="caption">by <router-link :to="getAuthorLink(authorId)">{{ author }}</router-link> on {{ time(timeUTC) }}</span>
+<object v-if="img" :data="img" />
 <div v-if="content" v-html="content" class="content"></div>
 <div v-else-if="thread && thread.content_text" class="content">{{ thread.content_text }}</div>
 <NewComment @posted="reload($route.params)"></NewComment>
@@ -39,6 +40,7 @@ export default {
     return {
       title: '',
       content: '',
+      img: null,
       author: '',
       authorId: '',
       timeUTC: '',
@@ -48,7 +50,7 @@ export default {
   },
   methods: {
     reply (item) {
-      this.$lotide.replyToComment(item.reply, item.item.id, false).then((json) => {
+      this.$lotide.replyToComment(item.reply, item.item.id, true).then((json) => {
         if(json) {
           this.reload(this.$route.params)
         } else {
@@ -64,6 +66,9 @@ export default {
       if(Number.isInteger(id)) {
         this.$lotide.getPost(id).then((json) => {
           if(json) {
+            if(json.href) {
+              this.img = json.href
+            }
             this.title = json.title
             this.content = json.content_html
             this.author = json.author.username
@@ -98,6 +103,10 @@ export default {
 <style scoped>
 .reply {
     font-size: medium;
+}
+object {
+    max-width: 100%;
+    display: block;
 }
 </style>
 

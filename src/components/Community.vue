@@ -18,8 +18,10 @@
 
 <template>
 <w-spinner v-if="items.length === 0" />
+<w-card v-if="description" class="thinner mb5"><pre>{{ description }}</pre></w-card>
 <w-button v-if="id !== null && loggedIn" @click="routeNewPost">New Post</w-button>
-<w-list :items="items" nav :hover="false">
+<w-button v-if="id !== null && loggedIn" @click="followCommunity" class="ml5">{{ follow && follow.accepted ? 'Unfollow' : 'Follow' }}</w-button>
+<w-list :items="items" nav :hover="false" class="mt4">
   <template #item="{ item }">
     <span class="title3 post-link">{{ item.title }}</span>
     <span class="caption ml3">{{ time(item.created) }}</span>
@@ -38,6 +40,8 @@ export default {
   data () {
     return {
       items: [],
+      description: null,
+      follow: null,
       id: null
     }
   },
@@ -59,7 +63,17 @@ export default {
     routeNewPost () {
       this.$router.push('' + this.id + '/new')
     },
-    reload (params) {
+    followCommunity () {
+      if(this.follow && this.follow.accepted) {
+        this.$lotide.unfollowCommunity(this.id)
+        this.follow = null
+      } else {
+        this.$lotide.followCommunity(this.id)
+        this.follow = { accepted: true }
+      }
+    },
+    reload () {
+      var params = this.$route.params
       var id = Number.parseInt(params.id)
       var load = (json) => {
         if(json) {
@@ -83,9 +97,24 @@ export default {
       if(Number.isInteger(id)) {
         this.id = id
         this.$lotide.getCommunityPosts(id).then(load)
+        this.$lotide.getCommunity(id).then((json) => {
+          this.description = json.description
+          if(this.$lotide.isLoggedIn() && json.your_follow) {
+            this.follow = json.your_follow
+          }
+        })
       } else if(!params.id) {
+        this.id = null
+        this.description = null
+        this.follow = null
         this.$lotide.getPosts().then(load)
         this.$emit('title', 'The Whole Known Timeline')
+      } else if(params.id === 'followed') {
+        this.id = null
+        this.description = null
+        this.follow = null
+        this.$lotide.getFollowingPosts().then(load)
+        this.$emit('title', 'Posts From Followed Communities')
       }
     }
   },
@@ -93,10 +122,10 @@ export default {
     // to be solved: this will continue to probe changes even if the view is unmounted
     this.$watch(
       () => this.$route.params,
-      (params) => {
-        this.reload(params)
+      () => {
+        this.reload()
       })
-    this.reload(this.$route.params)
+    this.reload()
   },
   props: {
     msg: String
@@ -105,6 +134,16 @@ export default {
 </script>
 
 <style scoped>
+.thinner {
+    max-width: 35em;
+}
+pre {
+    white-space: pre-wrap;
+}
+.post-link:empty::before {
+    content: "untitled";
+    opacity: 0.25;
+}
 .post-link {
     text-decoration: underline;
 }

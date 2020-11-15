@@ -33,8 +33,13 @@ export default {
       community: {
         get: '/communities/{id}',
         posts: '/communities/{id}/posts',
+        follow: '/communities/{id}/follow',
+        unfollow: '/communities/{id}/unfollow',
       },
-      posts: '/posts',
+      posts: {
+        all: '/posts',
+        following: '/users/~me/following:posts',
+      },
       post: {
         get: '/posts/{id}',
         post: '/posts',
@@ -60,6 +65,7 @@ export default {
         return headers
       }
     }
+    var isLoggedIn = () => { return !!logins.token }
     var getJson = (path, expectedStatus) => {
       return fetch(path, {
         method: 'GET',
@@ -159,7 +165,11 @@ export default {
       return getJson(getPath(apis.communities), 200)
     }
     var getCommunity = (id) => {
-      return getJson(getPath(apis.community.get, { id: id }), 200)
+      var path = getPath(apis.community.get, { id: id })
+      if(isLoggedIn()) {
+        path += "?include_your=true"
+      }
+      return getJson(path, 200)
     }
     var createCommunity = (name) => {
       return post(getPath(apis.communities), {
@@ -172,6 +182,24 @@ export default {
         }
       })
     }
+    var followCommunity = (id) => {
+      post(getPath(apis.community.follow, { id: id }), {}, 200).then((response) => {
+        if(response) {
+          return response.json()
+        } else {
+          return null
+        }
+      })
+    }
+    var unfollowCommunity = (id) => {
+      post(getPath(apis.community.unfollow, { id: id }), {}, 202).then((response) => {
+        if(response) {
+          return true
+        } else {
+          return false
+        }
+      })
+    }
     var getCommunityPosts = (id) => {
       return getJson(getPath(apis.community.posts, { id: id }), 200)
     }
@@ -179,7 +207,10 @@ export default {
       return getJson(getPath(apis.user.get, { id: id }), 200)
     }
     var getPosts = () => {
-      return getJson(getPath(apis.posts), 200)
+      return getJson(getPath(apis.posts.all), 200)
+    }
+    var getFollowingPosts = () => {
+      return getJson(getPath(apis.posts.following), 200)
     }
     var getPost = (id) => {
       return getJson(getPath(apis.post.get, { id: id }), 200)
@@ -299,9 +330,10 @@ export default {
       post: post,
       login: login,
       logout: logout,
-      isLoggedIn: () => { return !!logins.token },
+      isLoggedIn: isLoggedIn,
       getMe: () => { return logins },
       getPosts: getPosts,
+      getFollowingPosts: getFollowingPosts,
       getCommunities: getCommunities,
       getCommunityPosts: getCommunityPosts,
       updateLoginStatus: pullLocalStorage,
@@ -315,6 +347,8 @@ export default {
       lookup: lookup,
       getName: getName,
       getCommunity: getCommunity,
+      followCommunity: followCommunity,
+      unfollowCommunity: unfollowCommunity,
     }
   }
 }

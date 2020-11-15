@@ -23,7 +23,7 @@
   <div v-else-if="item.content_text" class="reply">{{ item.content_text }}</div>
   <w-button @click="replying = !replying" icon="mdi mdi-reply-outline" text lg color="info">Reply</w-button>
   <w-button @click="this.$emit('reply', { item: item, reply: reply })" v-if="replying" color="info" class="ml3">Submit</w-button>
-  <w-textarea v-if="replying" v-model:model-value="reply">Comment</w-textarea>
+  <w-textarea v-if="replying" v-model:model-value="reply">Comment (Markdown supported)</w-textarea>
   <div class="ml6 column">
     <Comment column class="mt2" v-for="i in item.replies" :key="i.created" :item="i" @reply="passon"></Comment>
   </div>

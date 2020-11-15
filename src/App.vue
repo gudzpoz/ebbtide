@@ -57,6 +57,7 @@ export default {
       prompt: '',
       items: [
         { label: 'The Whole Known Timeline', route: '/main/all' },
+        { label: 'Home Timeline', route: '/main/community/followed' },
         { label: 'Communities', route: '/main/communities' },
         { label: 'Search', route: '/main/search' },
         { label: 'Me', route: '/main/user/me' },
