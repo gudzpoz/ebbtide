@@ -123,7 +123,10 @@ export default {
     this.$watch(
       () => this.$route.params,
       () => {
-        this.reload()
+        const re = /^(\/main\/all)|(\/main\/community\/)/
+        if(re.test(this.$route.path)) {
+          this.reload()
+        }
       })
     this.reload()
   },

@@ -88,8 +88,11 @@ export default {
   created () {
     this.$watch(
       () => this.$route.params,
-      (params) => {
-        this.reload(params)
+      () => {
+        const re = /^\/main\/post\//
+        if(re.test(this.$route.path)) {
+          this.reload(params)
+        }
       })
     this.reload(this.$route.params)
   },
