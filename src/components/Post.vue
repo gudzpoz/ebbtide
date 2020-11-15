@@ -19,6 +19,11 @@
 <template>
 <h3 class="title2 mb5">{{ title }}</h3>
 <span class="caption">by <router-link :to="getAuthorLink(authorId)">{{ author }}</router-link> on {{ time(timeUTC) }}</span>
+<br><w-badge v-if="score !== null" v-model="score" class="mb4" bg-color="warning"><w-button @click="like" bg-color="warning">
+    <w-icon v-if="liked">mdi mdi-star-check-outline</w-icon>
+    <w-icon v-else>mdi mdi-star-outline</w-icon>
+    Likes
+</w-button></w-badge>
 <object v-if="img" :data="img" />
 <div v-if="content" v-html="content" class="content"></div>
 <div v-else-if="thread && thread.content_text" class="content">{{ thread.content_text }}</div>
@@ -43,12 +48,24 @@ export default {
       img: null,
       author: '',
       authorId: '',
+      liked: false,
+      score: null,
       timeUTC: '',
       replies: [],
       thread: null
     }
   },
   methods: {
+    like () {
+      if(this.liked) {
+        this.$lotide.unlikePost(this.thread.id)
+        --this.score
+      } else {
+        this.$lotide.likePost(this.thread.id)
+        ++this.score
+      }
+      this.liked = !this.liked
+    },
     reply (item) {
       this.$lotide.replyToComment(item.reply, item.item.id, true).then((json) => {
         if(json) {
@@ -68,11 +85,19 @@ export default {
           if(json) {
             if(json.href) {
               this.img = json.href
+            } else {
+              this.img = null
+            }
+            if(json.your_vote) {
+              this.liked = true
+            } else {
+              this.liked = false
             }
             this.title = json.title
             this.content = json.content_html
             this.author = json.author.username
             this.authorId = json.author.id
+            this.score = json.score
             this.timeUTC = json.created
             this.replies = json.replies
             this.thread = json
@@ -88,7 +113,7 @@ export default {
   created () {
     this.$watch(
       () => this.$route.params,
-      () => {
+      (params) => {
         const re = /^\/main\/post\//
         if(re.test(this.$route.path)) {
           this.reload(params)

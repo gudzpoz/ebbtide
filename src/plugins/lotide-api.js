@@ -44,6 +44,8 @@ export default {
         get: '/posts/{id}',
         post: '/posts',
         replies: '/posts/{id}/replies',
+        like: '/posts/{id}/your_vote',
+        unlike: '/posts/{id}/your_vote',
       },
       users: '/users',
       user: {
@@ -82,6 +84,18 @@ export default {
       return fetch(path, {
         method: 'POST',
         body: JSON.stringify(body),
+        headers: authorizeHeaders({})
+      }).then((response) => {
+        if(response.status === expectedStatus) {
+          return response
+        } else {
+          return null
+        }
+      })
+    }
+    var put = (path, expectedStatus) => {
+      return fetch(path, {
+        method: 'PUT',
         headers: authorizeHeaders({})
       }).then((response) => {
         if(response.status === expectedStatus) {
@@ -213,7 +227,11 @@ export default {
       return getJson(getPath(apis.posts.following), 200)
     }
     var getPost = (id) => {
-      return getJson(getPath(apis.post.get, { id: id }), 200)
+      var path = getPath(apis.post.get, { id: id })
+      if(isLoggedIn()) {
+        path += '?include_your=true'
+      }
+      return getJson(path, 200)
     }
     var replyToPost = (content, id) => {
       return post(getPath(apis.post.replies, { id: id }), {
@@ -252,6 +270,24 @@ export default {
           }
         })
       }
+    }
+    var likePost = (id) => {
+      return put(getPath(apis.post.like, { id: id }), 204).then((response) => {
+        if(response) {
+          return true
+        } else {
+          return false
+        }
+      })
+    }
+    var unlikePost = (id) => {
+      return postDelete(getPath(apis.post.like, { id: id }), 204).then((response) => {
+        if(response) {
+          return true
+        } else {
+          return false
+        }
+      })
     }
     var replyToComment = (text, commentId, markdown) => {
       if(markdown) {
@@ -340,6 +376,8 @@ export default {
       getPost: getPost,
       replyToPost: replyToPost,
       postPost: postPost,
+      likePost: likePost,
+      unlikePost: unlikePost,
       replyToComment: replyToComment,
       register: register,
       createCommunity: createCommunity,
