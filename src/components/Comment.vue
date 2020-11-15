@@ -21,6 +21,11 @@
   <span class="caption">by <router-link :to="getAuthorLink(item.author.id)">{{ item.author.username }}</router-link> on {{ time(item.created) }}</span>
   <div v-if="item.content_html" class="reply" v-html="item.content_html"></div>
   <div v-else-if="item.content_text" class="reply">{{ item.content_text }}</div>
+  <w-button @click="like" bg-color="white">
+    <w-icon v-if="liked" color="warning">mdi mdi-star</w-icon>
+    <w-icon v-else>mdi mdi-star-outline</w-icon>
+    {{ number }}
+  </w-button>
   <w-button @click="replying = !replying" icon="mdi mdi-reply-outline" text lg color="info">Reply</w-button>
   <w-button @click="this.$emit('reply', { item: item, reply: reply })" v-if="replying" color="info" class="ml3">Submit</w-button>
   <w-textarea v-if="replying" v-model:model-value="reply">Comment (Markdown supported)</w-textarea>
@@ -40,6 +45,16 @@ export default {
     item: Object
   },
   methods: {
+    like () {
+      if(this.liked) {
+        this.$lotide.unlikeComment(this.item.id)
+        --this.number
+      } else {
+        this.$lotide.likeComment(this.item.id)
+        ++this.number
+      }
+      this.liked = !this.liked
+    },
     time (utc) {
       return moment.utc(utc).fromNow()
     },
@@ -53,8 +68,18 @@ export default {
   data () {
     return {
       replying: false,
+      liked: false,
+      number: null,
       reply: ''
     }
+  },
+  created () {
+    if(this.item.your_vote) {
+      this.liked = true
+    } else {
+      this.liked = false
+    }
+    this.number = this.item.score
   }
 }
 </script>

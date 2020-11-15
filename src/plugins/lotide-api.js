@@ -54,6 +54,8 @@ export default {
       },
       comment: {
         reply: '/comments/{id}/replies',
+        like: '/comments/{id}/your_vote',
+        unlike: '/comments/{id}/your_vote',
       },
       register: '/users',
       lookup: '/actors:lookup/{id}',
@@ -289,6 +291,24 @@ export default {
         }
       })
     }
+    var likeComment = (id) => {
+      return put(getPath(apis.comment.like, { id: id }), 204).then((response) => {
+        if(response) {
+          return true
+        } else {
+          return false
+        }
+      })
+    }
+    var unlikeComment = (id) => {
+      return postDelete(getPath(apis.comment.like, { id: id }), 204).then((response) => {
+        if(response) {
+          return true
+        } else {
+          return false
+        }
+      })
+    }
     var replyToComment = (text, commentId, markdown) => {
       if(markdown) {
         return post(getPath(apis.comment.reply, { id: commentId }), {
@@ -378,6 +398,8 @@ export default {
       postPost: postPost,
       likePost: likePost,
       unlikePost: unlikePost,
+      likeComment: likeComment,
+      unlikeComment: unlikeComment,
       replyToComment: replyToComment,
       register: register,
       createCommunity: createCommunity,
