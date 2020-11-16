@@ -27,14 +27,14 @@ import LotideApi from './plugins/lotide-api.js'
 const VueRouter = require('vue-router')
 const config = require('./config.js')
 
-import Communities from './components/Communities.vue'
-import Community from './components/Community.vue'
-import NewPost from './components/NewPost.vue'
-import Post from './components/Post.vue'
-import User from './components/User.vue'
-import Search from './components/Search.vue'
-import About from './components/About.vue'
-import NotFound from './components/NotFound.vue'
+const Communities = () => import('./components/Communities.vue')
+const Community = () => import('./components/Community.vue')
+const NewPost = () => import('./components/NewPost.vue')
+const Post = () => import('./components/Post.vue')
+const User = () => import('./components/User.vue')
+const Search = () => import('./components/Search.vue')
+const About = () => import('./components/About.vue')
+const NotFound = () => import('./components/NotFound.vue')
 
 const routes = [
   { path: '/', redirect: '/main' },
