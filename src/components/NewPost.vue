@@ -17,38 +17,34 @@
 -->
 
 <template>
-  <editor />
+<div>
+  <w-input v-model="title" class="title1" required>Title</w-input>
+  <w-button @click="submit" class="my3">
+    <w-icon class="mr2">mdi mdi-send</w-icon>
+    Send!
+  </w-button>
+  <textarea id="easymde" />
+</div>
 </template>
 
 <script>
-/*
-  Thank github.com/Fubinator for the adaption to Vue 3.0
-  See: https://github.com/nhn/tui.editor/issues/1226#issuecomment-709318502
-*/
+import EasyMDE from 'easymde'
+import 'easymde/dist/easymde.min.css'
 
-import { onMounted, ref, h } from "vue"
-import Editor from "@toast-ui/editor"
-import "codemirror/lib/codemirror.css"
-import "@toast-ui/editor/dist/toastui-editor.css"
-
-// workaround for now
-var globalEditor = null
+var easyMDE;
 
 export default {
   name: 'NewPost',
-  props: {
-    modelValue: {
-      type: String,
-      required: false,
-      default: ""
+  data () {
+    return {
+      title: ''
     }
   },
-  mounted () {
-    globalEditor.eventManager.listen('submit', () => {
+  methods: {
+    submit () {
       var id = Number.parseInt(this.$route.params.id)
-      var title = prompt('Please enter a title for the post:')
-      if(title && Number.isInteger(id)) {
-        this.$lotide.postPost(title, globalEditor.getMarkdown(), id, true).then((json) => {
+      if(this.title && Number.isInteger(id)) {
+        this.$lotide.postPost(this.title, easyMDE.value(), id, true).then((json) => {
           if(json) {
             this.$router.push('/main/post/' + json.id)
           } else {
@@ -56,38 +52,13 @@ export default {
           }
         })
       }
-    })
-  },
-  setup(_, { emit }) {
-    const editor = ref()
-    
-    onMounted(() => {
-      var e = new Editor({
-        usageStatistics: false,
-        el: editor.value,
-        height: "500px",
-        initialEditType: "markdown",
-        previewStyle: "tab",
-        events: {
-          change: () => emit("update:modelValue", e.getMarkdown())
-        }
-      })
-      const toolbar = e.getUI().getToolbar()
-      e.eventManager.addEventType('submit')
-      globalEditor = e
-      toolbar.insertItem(0, {
-        type: 'button',
-        options: {
-          className: 'mdi mdi-send',
-          event: 'submit',
-          tooltip: 'Submit the post',
-          style: 'color: blue; background: none; padding: 0; border: 1.5px solid; border-radius: 50%;'
-        }
-      })
-    })
-    return () => {
-      return h("div", { ref: editor })
     }
+  },
+  mounted () {
+    if(easyMDE) {
+      easyMDE.toTextArea()
+    }
+    easyMDE = new EasyMDE({ element: this.$el.querySelector('#easymde') })
   }
 }
 </script>
