@@ -30,7 +30,9 @@
   <w-button @click="this.$emit('reply', { item: item, reply: reply })" v-if="replying" color="info" class="ml3">Submit</w-button>
   <w-textarea v-if="replying" v-model:model-value="reply">Comment (Markdown supported)</w-textarea>
   <div class="ml6 column">
-    <Comment column class="mt2" v-for="i in item.replies" :key="i.created" :item="i" @reply="passon"></Comment>
+    <Comment column class="mt2" v-for="i in replies" :key="i.created" :item="i" @reply="passon"></Comment>
+    <w-button v-if="item.has_replies && !item.replies && !loadedReplies && !loadingReplies" @click="loadReplies">Load replies</w-button>
+    <w-spinner v-if="loadingReplies" />
   </div>
 </div>
 </template>
@@ -63,6 +65,22 @@ export default {
     },
     passon (item) {
       this.$emit('reply', item)
+    },
+    loadReplies () {
+      this.loadingReplies = true
+      this.$lotide.getComment(this.item.id).then((json) => {
+        this.loadingReplies = false
+        this.loadedReplies = json.replies
+      })
+    }
+  },
+  computed: {
+    replies () {
+      if(this.item.replies) {
+        return this.item.replies
+      } else {
+        return this.loadedReplies
+      }
     }
   },
   data () {
@@ -70,6 +88,8 @@ export default {
       replying: false,
       liked: false,
       number: null,
+      loadingReplies: false,
+      loadedReplies: null,
       reply: ''
     }
   },

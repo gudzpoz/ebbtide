@@ -56,6 +56,7 @@ export default {
         get: '/users/{id}',
       },
       comment: {
+        get: '/comments/{id}',
         reply: '/comments/{id}/replies',
         like: '/comments/{id}/your_vote',
         unlike: '/comments/{id}/your_vote',
@@ -260,6 +261,13 @@ export default {
       }
       return getJson(path, 200)
     }
+    var getComment = (id) => {
+      var path = getPath(apis.comment.get, { id: id })
+      if(isLoggedIn()) {
+        path += '?include_your=true'
+      }
+      return getJson(path, 200)
+    }
     var replyToPost = (content, id) => {
       return post(getPath(apis.post.replies, { id: id }), {
         content_text: content
@@ -417,6 +425,7 @@ export default {
       getCommunityPosts: getCommunityPosts,
       updateLoginStatus: pullLocalStorage,
       getPost: getPost,
+      getComment: getComment,
       replyToPost: replyToPost,
       postPost: postPost,
       likePost: likePost,
