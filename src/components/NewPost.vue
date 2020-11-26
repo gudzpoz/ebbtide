@@ -18,11 +18,20 @@
 
 <template>
 <div>
-  <w-input v-model="title" class="title1" required>Title</w-input>
-  <w-button @click="submit" class="my3">
+  <w-input v-model="title" class="title1" required>Enter the title of the post</w-input>
+  <w-button @click="submit" class="my3 mr3">
     <w-icon class="mr2">mdi mdi-send</w-icon>
     Send!
   </w-button>
+  <input id="file" type="file" />
+  <w-transition-expand y>
+    <w-alert v-if="uploading" color="info">
+      Uploading the file...
+    </w-alert>
+    <w-alert v-if="failed" color="error">
+      Upload Failed.
+    </w-alert>
+  </w-transition-expand>
   <textarea id="easymde" />
 </div>
 </template>
@@ -37,20 +46,44 @@ export default {
   name: 'NewPost',
   data () {
     return {
+      uploading: false,
+      failed: true,
       title: ''
     }
   },
   methods: {
+    post (id) {      
+      this.$lotide.postPost(this.title, easyMDE.value(), id, true, this.href).then((json) => {
+        if(json) {
+          this.$router.push('/main/post/' + json.id)
+        } else {
+          alert('Post failed.')
+        }
+      })
+    },
     submit () {
       var id = Number.parseInt(this.$route.params.id)
+      var input = this.$el.querySelector('#file')
+      console.log(input)
       if(this.title && Number.isInteger(id)) {
-        this.$lotide.postPost(this.title, easyMDE.value(), id, true).then((json) => {
-          if(json) {
-            this.$router.push('/main/post/' + json.id)
-          } else {
-            alert('Post failed.')
-          }
-        })
+        if(input.files.length) {
+          this.uploading = true
+          this.$lotide.uploadImage(input.files[0]).then((mediaId) => {
+            this.uploading = false
+            if(id) {
+              console.log(id)
+              this.href = 'local-media://' + mediaId
+              this.post(id)
+            } else {
+              this.failed = true
+              setTimeout(() => { this.failed = false }, 2000)
+            }
+          })
+        } else {
+          this.href = null
+          this.post(id)
+        }
+        /*  */
       }
     }
   },

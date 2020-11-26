@@ -47,6 +47,9 @@ export default {
         like: '/posts/{id}/your_vote',
         unlike: '/posts/{id}/your_vote',
       },
+      media: {
+        post: '/media',
+      },
       users: '/users',
       user: {
         me: '/users/~me',
@@ -90,6 +93,25 @@ export default {
       }).then((response) => {
         if(response.status === expectedStatus) {
           return response
+        } else {
+          return null
+        }
+      })
+    }
+    var uploadImage = (imageFile) => {
+      return fetch(getPath(apis.media.post), {
+        method: 'POST',
+        body: imageFile,
+        headers: authorizeHeaders({})
+      }).then((response) => {
+        if(response.status === 200) {
+          return response.json()
+        } else {
+          return null
+        }
+      }).then((json) => {
+        if(json) {
+          return json.id
         } else {
           return null
         }
@@ -246,32 +268,29 @@ export default {
         }
       })
     }
-    var postPost = (title, text, communityId, markdown) => {
-      if(markdown) {
-        return post(getPath(apis.post.post), {
-          community: communityId,
-          title: title,
-          content_markdown: text
-        }, 200).then((response) => {
-          if(response) {
-            return response.json()
-          } else {
-            return null
-          }
-        })
-      } else {
-        return post(getPath(apis.post.post), {
-          community: communityId,
-          title: title,
-          content_text: text
-        }, 200).then((response) => {
-          if(response) {
-            return response.json()
-          } else {
-            return null
-          }
-        })
+    var postPost = (title, text, communityId, markdown, href) => {
+      var data = {
+        community: communityId,
+        title: title,
       }
+
+      if(href) {
+        data['href'] = href
+      }
+      
+      if(markdown) {
+        data['content_markdown'] = text
+      } else {
+        data['content_text'] = text
+      }
+      
+      return post(getPath(apis.post.post), data, 200).then((response) => {
+        if(response) {
+          return response.json()
+        } else {
+          return null
+        }
+      })
     }
     var likePost = (id) => {
       return put(getPath(apis.post.like, { id: id }), 204).then((response) => {
@@ -409,6 +428,7 @@ export default {
       getCommunity: getCommunity,
       followCommunity: followCommunity,
       unfollowCommunity: unfollowCommunity,
+      uploadImage: uploadImage,
     }
   }
 }
