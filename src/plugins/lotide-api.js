@@ -164,6 +164,9 @@ export default {
         window.localStorage.removeItem('token')
       }
     }
+    var getInstanceInfo = () => {
+      return getJson(getPath(apis.instance), 200)
+    }
     var login = (username, password) => {
       return post(getPath(apis.login), {
         username: username,
@@ -406,6 +409,7 @@ export default {
       login: login,
       logout: logout,
       isLoggedIn: isLoggedIn,
+      getInstanceInfo: getInstanceInfo,
       getMe: () => { return logins },
       getPosts: getPosts,
       getFollowingPosts: getFollowingPosts,

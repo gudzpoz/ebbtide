@@ -17,6 +17,16 @@
 -->
 
 <template>
+<w-icon xl size="4em" bg-color="white" color="info" class="mb4">mdi mdi-server</w-icon>
+<h3>Server Info</h3>
+<div v-if="info">
+  <div>{{ info.description }}</div>
+  <br>
+  <div>
+    {{ 'The server is running on ' + info.software.name + ' ' + info.software.version }}
+  </div>
+</div>
+<br class="my6">
 <w-icon xl size="4em" bg-color="info" color="white" class="mb4">mdi mdi-hydro-power</w-icon>
 <h3>Ebbtide</h3>
 A frontend for <a href="https://git.sr.ht/~vpzom/lotide">lotide</a>.
@@ -28,8 +38,20 @@ Licensed under the <a href="https://www.gnu.org/licenses/agpl-3.0.txt">GNU Affer
 export default {
   name: 'About',
   emits: ['title'],
+  data () {
+    return {
+      info: null
+    }
+  },
   created () {
     this.$emit('title', 'About')
+    this.$lotide.getInstanceInfo().then((json) => {
+      console.log(json)
+      if(json) {
+        this.info = json
+        this.hasInfo = true
+      }
+    })
   }
 }
 </script>
